@@ -1,0 +1,69 @@
+body {
+  font-family: "Tajawal", sans-serif;
+}
+
+.card:hover {
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+  border: 1px solid #0aad0a;
+}
+
+.card .card_img .badges {
+  top: 10px;
+  left: 10px;
+}
+
+.card .card-product-action {
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  bottom: 30%;
+  transform: translateX(-50%) translateY(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease 0s;
+  z-index: 9;
+}
+
+.card .btn-action {
+  background-color: white;
+  color: #21313c;
+  height: 34px;
+  width: 34px;
+  font-size: 14px;
+  border-radius: 0.5rem;
+  column-gap: 10px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 34px;
+  transition: all 0.3s ease 0s;
+  box-shadow: 0 2px 4px -1px rgba(145, 158, 171, 0.2),
+    0 4px 5px 0 rgba(145, 158, 171, 0.14),
+    0 1px 10px 0 rgba(145, 158, 171, 0.12);
+}
+
+.card:hover .card-hidden,
+.card:hover .card-product-action {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tooltip {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+.card .card_title a {
+  color: #21313c;
+  font-weight: 600;
+}
+
+.text-dark {
+  color: rgb(0, 30, 43) !important;
+}
+
+.text-muted {
+  color: rgba(92, 108, 117, 0.75) !important;
+}

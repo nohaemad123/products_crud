@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tooltip Test</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/all.min.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container py-4">
+      <h1 class="text-center fw-bolder mb-0 p-0">Product management system</h1>
+      <div class="mt-3 pt-4 border-top">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="product_code"
+            oninput="validateProductInput(this)"
+            placeholder="Product code"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="code_alert"
+            role="alert"
+          >
+            Product code must be 5 to 10 characters long, using only lower
+            letters and digits, with no spaces or special characters.
+          </div>
+          <label for="product_code">Product code</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="product_name"
+            oninput="validateProductInput(this)"
+            placeholder="Product name"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="name_alert"
+            role="alert"
+          >
+            Product name must be 3 to 50 characters long and can include
+            letters, numbers, spaces, dashes (-), underscores (_), and
+            apostrophes ('). No special characters like @, #, $, etc.
+          </div>
+          <label for="product_name">Product name</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="number"
+            class="form-control"
+            oninput="validateProductInput(this)"
+            id="product_price"
+            placeholder="Product price"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="price_alert"
+            role="alert"
+          >
+            Product price must be a positive integer
+          </div>
+          <label for="product_price">Product price</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="number"
+            class="form-control"
+            id="product_old_price"
+            oninput="validateProductInput(this)"
+            placeholder="Product old price"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="old_price_alert"
+            role="alert"
+          >
+            Product old price must be a positive integer
+          </div>
+          <label for="product_old_price">Product old price</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="number"
+            class="form-control"
+            id="product_discount"
+            oninput="validateProductInput(this)"
+            placeholder="Product discount"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="discount_alert"
+            role="alert"
+          >
+            Product discount must be a whole number between 1 and 100
+          </div>
+          <label for="product_discount">Product discount</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            oninput="validateProductInput(this)"
+            id="product_note"
+            placeholder="Product note"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="note_alert"
+            role="alert"
+          >
+            Product note must be 3 to 10 characters long and contain only
+            letters and spaces.
+          </div>
+          <label for="product_note">Product note</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="number"
+            class="form-control"
+            oninput="validateProductInput(this)"
+            id="product_rate"
+            placeholder="Product rate"
+          />
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="rate_alert"
+            role="alert"
+          >
+            Product rate must be a number from 1 to 5 (inclusive), no decimals
+            allowed.
+          </div>
+          <label for="product_rate">Product rate</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="product_category"
+            oninput="validateProductInput(this)"
+            list="categories"
+            placeholder="Product category"
+          />
+          <datalist id="categories">
+            <option value="Tv"></option>
+            <option value="Mobiles"></option>
+            <option value="food"></option>
+            <option value="other"></option>
+          </datalist>
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="category_alert"
+            role="alert"
+          >
+            Product category must be one of the predefined options: Tv, Mobiles,
+            food, other.
+          </div>
+          <label for="product_category">Product category</label>
+        </div>
+        <div class="form-floating mb-3">
+          <textarea
+            class="form-control"
+            id="product_description"
+            placeholder="Product description"
+            oninput="validateProductInput(this)"
+            style="height: 200px"
+            rows="5"
+          ></textarea>
+          <div
+            class="alert alert-danger mt-2 d-none"
+            id="description_alert"
+            role="alert"
+          >
+            Product description must be 10 to 500 characters long, and can
+            contain only letters, numbers, and spaces. No punctuation or special
+            characters allowed.
+          </div>
+          <label for="product_description">Product description</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="file"
+            class="form-control"
+            id="product_image"
+            placeholder="Product image"
+          />
+          <label for="product_image">Product image</label>
+        </div>
+        <div class="product_image d-none mb-3">
+          <img src="" height="300" />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-success"
+          id="addBtn"
+          onclick="addProduct()"
+        >
+          Add product
+        </button>
+        <button
+          type="submit"
+          id="updateBtn"
+          class="btn btn-warning d-none"
+          onclick="updateProduct()"
+        >
+          Update product
+        </button>
+      </div>
+
+      <div class="products py-5 border-top mt-4">
+        <div class="row">
+          <div class="col-md-9">
+            <h2>Products</h2>
+          </div>
+          <div class="col-md-3">
+            <input
+              type="text"
+              oninput="search(this.value)"
+              class="form-control"
+              placeholder="search..."
+            />
+          </div>
+        </div>
+        <div class="row mt-3 products_div"></div>
+        <div class="no_products text-center d-none mt-3 alert alert-danger">
+          No products Yet, please add product
+        </div>
+        <div
+          class="no_products_search text-center d-none mt-3 alert alert-danger"
+        >
+          No products found
+        </div>
+      </div>
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content m-auto">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modal-title">Product Title</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <img
+                    id="modal-image"
+                    class="w-100"
+                    src="images/photo-1494438639946-1ebd1d20bf85.avif"
+                    alt="Product image"
+                    height="600"
+                  />
+                </div>
+                <div class="col-lg-6">
+                  <h3
+                    id="modal-category"
+                    class="mb-3 d-block fs-5 fw-bold text-success"
+                  ></h3>
+                  <h2 id="modal-product-name" class="fw-medium mb-1 h1"></h2>
+                  <div class="fs-4">
+                    <span class="fw-bold text-dark" id="modal-price"></span>
+                    <span
+                      class="text-decoration-line-through text-danger"
+                      id="modal-old-price"
+                    ></span>
+                    <span>
+                      <small
+                        class="fs-6 ms-2 text-danger"
+                        id="modal-discount"
+                      ></small>
+                    </span>
+                  </div>
+                  <div class="mb-3" id="modal-rating"></div>
+
+                  <p id="modal-description" class="mt-2 fs-6"></p>
+                  <hr />
+                  <table class="table table-borderless mt-4">
+                    <tbody>
+                      <tr>
+                        <td>Product Code:</td>
+                        <td id="modal-code"></td>
+                      </tr>
+                      <tr>
+                        <td>Type:</td>
+                        <td id="modal-note"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      const tooltipTriggerList = document.querySelectorAll(
+        '[data-bs-toggle="modal"]'
+      );
+      tooltipTriggerList.forEach((el) => {
+        new bootstrap.Tooltip(el);
+      });
+    </script>
+    <script src="js/index.js"></script>
+  </body>
+</html>
