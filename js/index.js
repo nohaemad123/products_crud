@@ -22,10 +22,10 @@ var regex = {
     value: /^[a-z0-9]{5,10}$/,
     isValid: false,
   },
-  product_name: {
-    value: /^[A-Za-z0-9 _\-']{3,10}$/,
-    isValid: false,
-  },
+product_name: {
+  value: /^[A-Za-z0-9 _\-']{3,50}$/,
+  isValid: false,
+},
   product_price: {
     value: /^[1-9]\d*$/,
     isValid: false,
@@ -55,7 +55,18 @@ product_image.addEventListener("change", function () {
   }
 });
 
-function addProduct() {
+function getImageBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+
+    reader.readAsDataURL(file);
+  });
+}
+
+async function addProduct() {
   removeValidInput();
   productList = JSON.parse(localStorage.getItem("products")) || [];
 
@@ -69,8 +80,8 @@ function addProduct() {
     productCategory: product_category.value,
     productDescription: product_description.value,
     productImage: product_image.files[0]
-      ? `images/${product_image.files[0].name}`
-      : "images/images.png",
+  ? await getImageBase64(product_image.files[0])
+  : "images/images.png",
     productRate: parseFloat(product_rate.value),
     id: productList.length,
   };
@@ -89,14 +100,16 @@ function addProduct() {
 
 function displayProducts(list) {
   var cartona = ``;
+
+  document.querySelector(".no_products").classList.add("d-none");
+
   productsLocal = JSON.parse(localStorage.getItem("products"));
 
-  console.log(productsLocal);
-
   if (list) {
-    for (var i = 0; i < list.length; i++) {
-      console.log(productsLocal[i].productName);
-      cartona += `
+    if (list.length > 0) {
+      for (var i = 0; i < list.length; i++) {
+        console.log(productsLocal[i].productName);
+        cartona += `
           <div class="col-md-4 mb-4">
             <div class="card">
               <div class="card_img position-relative">
@@ -176,43 +189,57 @@ src="${list[i].productImage || "images/images.png"}"
             </div>
           </div>
         `;
+      }
+    } else {
+      document.querySelector(".no_products").classList.remove("d-none");
     }
   }
 
   products_div.innerHTML = cartona;
 }
 
-function getProduct(index) {
-  for (var i = 0; i < productsLocal.length; i++) {
-    if (productsLocal[i].id === index) {
-      const product = productsLocal[index];
-      document.getElementById("modal-title").innerText = product.productName;
-      document.getElementById("modal-product-name").innerText =
-        product.productName;
-      document.getElementById(
-        "modal-price"
-      ).innerText = `$${product.productPrice}`;
-      document.getElementById(
-        "modal-old-price"
-      ).innerText = `$${product.productOldPrice}`;
-      document.getElementById("modal-discount").innerText =
-        product.productDiscount ? `${product.productDiscount} % Off` : "";
-      document.getElementById("modal-description").innerText =
-        product.productDescription;
-      document.getElementById("modal-code").innerText = product.productCode;
-      document.getElementById("modal-category").innerText =
-        product.productCategory;
-      document.getElementById("modal-note").innerText = product.productNote;
-      document.getElementById("modal-image").src =
-        product.productImage || "images/images.png";
+function getProduct(productId) {
+  const product = productsLocal.find(
+    product => product.id === productId
+  );
 
-      document.getElementById("modal-rating").innerHTML = `
-  ${generateStars(product.productRate)} <span class="text-muted">(${
-        product.productRate
-      })</span>
-`;
-    }
-  }
+  if (!product) return;
+
+  document.getElementById("modal-title").innerText = product.productName;
+
+  document.getElementById("modal-product-name").innerText =
+    product.productName;
+
+  document.getElementById("modal-price").innerText =
+    `$${product.productPrice}`;
+
+  document.getElementById("modal-old-price").innerText =
+    `$${product.productOldPrice}`;
+
+  document.getElementById("modal-discount").innerText =
+    product.productDiscount
+      ? `${product.productDiscount} % Off`
+      : "";
+
+  document.getElementById("modal-description").innerText =
+    product.productDescription;
+
+  document.getElementById("modal-code").innerText =
+    product.productCode;
+
+  document.getElementById("modal-category").innerText =
+    product.productCategory;
+
+  document.getElementById("modal-note").innerText =
+    product.productNote;
+
+  document.getElementById("modal-image").src =
+    product.productImage || "images/images.png";
+
+  document.getElementById("modal-rating").innerHTML = `
+    ${generateStars(product.productRate)}
+    <span class="text-muted">(${product.productRate})</span>
+  `;
 }
 
 function updateFormInputValues(config) {
@@ -248,7 +275,6 @@ function generateStars(rating) {
   }
   return stars;
 }
-
 function deleteProduct(product_id) {
   Swal.fire({
     title: "Are you sure?",
@@ -264,11 +290,18 @@ function deleteProduct(product_id) {
         if (productsLocal[i].id === product_id) {
           productList = JSON.parse(localStorage.getItem("products")) || [];
 
-          productList.splice(product_id, 1);
+          productList.splice(i, 1);
 
           updateLocalStorage(productList);
           displayProducts(productList);
-          Swal.fire("Deleted!", "Your product has been deleted.", "success");
+
+          Swal.fire(
+            "Deleted!",
+            "Your product has been deleted.",
+            "success"
+          );
+
+          break;
         }
       }
     }
@@ -276,15 +309,20 @@ function deleteProduct(product_id) {
 }
 
 function getDataToUpdate(product_id) {
-  currentIndex = product_id;
-  updateFormInputValues(productsLocal[product_id]);
+  currentIndex = productsLocal.findIndex(
+    (product) => product.id === product_id
+  );
+
+  updateFormInputValues(productsLocal[currentIndex]);
+
   add_button.classList.add("d-none");
   update_button.classList.remove("d-none");
+
   const imageWrapper = document.querySelector(".product_image");
   const imageElement = imageWrapper.querySelector("img");
 
-  if (productsLocal[product_id].productImage) {
-    imageElement.src = productsLocal[product_id].productImage;
+  if (productsLocal[currentIndex].productImage) {
+    imageElement.src = productsLocal[currentIndex].productImage;
     imageWrapper.classList.remove("d-none");
   } else {
     imageWrapper.classList.add("d-none");
@@ -292,7 +330,7 @@ function getDataToUpdate(product_id) {
   }
 }
 
-function updateProduct() {
+async function updateProduct() {
   removeValidInput();
 
   const selectedFile = product_image.files[0];
@@ -306,13 +344,15 @@ function updateProduct() {
   productsLocal[currentIndex].productCategory = product_category.value;
   productsLocal[currentIndex].productDescription = product_description.value;
   productsLocal[currentIndex].productRate = product_rate.value;
+
   if (selectedFile) {
-    productsLocal[currentIndex].productImage = `images/${selectedFile.name}`;
-  } else if (!productsLocal[currentIndex].productImage) {
-    productsLocal[currentIndex].productImage = "images/images.png";
+    productsLocal[currentIndex].productImage =
+      await getImageBase64(selectedFile);
   }
+
   add_button.classList.remove("d-none");
   update_button.classList.add("d-none");
+
   updateFormInputValues();
   updateLocalStorage(productsLocal);
   displayProducts(productsLocal);
@@ -324,23 +364,34 @@ function updateLocalStorage(products_obj) {
 
 function search(searchValue) {
   var searchItem = [];
-  document.querySelector(".no_products_search").classList.add("d-none"); // hide it first
+
+  document
+    .querySelector(".no_products_search")
+    .classList.add("d-none");
 
   for (var i = 0; i < productsLocal.length; i++) {
     var item = productsLocal[i];
 
-    if (item.productName.toLowerCase().includes(searchValue.toLowerCase())) {
-      searchItem.push(item);
-      item.newName = item.productName
+    if (
+      item.productName
         .toLowerCase()
-        .replace(searchValue, `<span class='bg-warning'>${searchValue}</span>`);
-      console.log(item);
+        .includes(searchValue.toLowerCase())
+    ) {
+      searchItem.push(item);
+
+      item.newName = item.productName.replace(
+        new RegExp(searchValue, "ig"),
+        `<span class="bg-warning">$&</span>`
+      );
     }
   }
 
   if (searchItem.length === 0) {
-    document.querySelector(".no_products_search").classList.remove("d-none");
+    document
+      .querySelector(".no_products_search")
+      .classList.remove("d-none");
   }
+
   displayProducts(searchItem);
 }
 
@@ -390,4 +441,8 @@ function removeValidInput() {
   product_category.classList.remove("is-valid");
   product_description.classList.remove("is-valid");
   product_rate.classList.remove("is-valid");
+
+  for (let key in regex) {
+    regex[key].isValid = false;
+  }
 }
