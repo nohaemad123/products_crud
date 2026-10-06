@@ -22,10 +22,10 @@ var regex = {
     value: /^[a-z0-9]{5,10}$/,
     isValid: false,
   },
-product_name: {
-  value: /^[A-Za-z0-9 _\-']{3,50}$/,
-  isValid: false,
-},
+  product_name: {
+    value: /^[A-Za-z0-9 _\-']{3,50}$/,
+    isValid: false,
+  },
   product_price: {
     value: /^[1-9]\d*$/,
     isValid: false,
@@ -80,8 +80,8 @@ async function addProduct() {
     productCategory: product_category.value,
     productDescription: product_description.value,
     productImage: product_image.files[0]
-  ? await getImageBase64(product_image.files[0])
-  : "images/images.png",
+      ? await getImageBase64(product_image.files[0])
+      : "images/images.png",
     productRate: parseFloat(product_rate.value),
     id: productList.length,
   };
@@ -98,7 +98,7 @@ async function addProduct() {
   }
 }
 
-function displayProducts(list) {
+function displayProducts(list, isSearch = false) {
   var cartona = ``;
 
   document.querySelector(".no_products").classList.add("d-none");
@@ -115,16 +115,14 @@ function displayProducts(list) {
               <div class="card_img position-relative">
                 <div class="position-absolute badges">
                   <div class="d-flex gap-1 flex-column">
-                    ${
-                      list[i].productNote
-                        ? `<span class="custom-badge badge bg-danger">${list[i].productNote}</span>`
-                        : ""
-                    }
-                    ${
-                      list[i].productDiscount
-                        ? `<span class="custom-badge badge bg-success">${list[i].productDiscount} %</span>`
-                        : ""
-                    }
+                    ${list[i].productNote
+            ? `<span class="custom-badge badge bg-danger">${list[i].productNote}</span>`
+            : ""
+          }
+                    ${list[i].productDiscount
+            ? `<span class="custom-badge badge bg-success">${list[i].productDiscount} %</span>`
+            : ""
+          }
                   </div>
                 </div>
                 <img
@@ -170,17 +168,15 @@ src="${list[i].productImage || "images/images.png"}"
                     ${list[i].newName ? list[i].newName : list[i].productName}
                   </a>
                 </h2>
-                ${
-                  list[i].productRate
-                    ? `
+                ${list[i].productRate
+            ? `
                   <div class="mb-1">
                     ${generateStars(list[i].productRate)}
-                    <span class="text-muted small">(${
-                      list[i].productRate
-                    })</span>
+                    <span class="text-muted small">(${list[i].productRate
+            })</span>
                   </div>`
-                    : ""
-                }
+            : ""
+          }
                 <span class="text-dark">$${list[i].productPrice}</span>
                 <span class="text-decoration-line-through text-danger">
                   $${list[i].productOldPrice}
@@ -191,7 +187,11 @@ src="${list[i].productImage || "images/images.png"}"
         `;
       }
     } else {
-      document.querySelector(".no_products").classList.remove("d-none");
+      if (!isSearch) {
+        document
+          .querySelector(".no_products")
+          .classList.remove("d-none");
+      }
     }
   }
 
@@ -369,6 +369,7 @@ function search(searchValue) {
     .querySelector(".no_products_search")
     .classList.add("d-none");
 
+
   for (var i = 0; i < productsLocal.length; i++) {
     var item = productsLocal[i];
 
@@ -384,6 +385,7 @@ function search(searchValue) {
         `<span class="bg-warning">$&</span>`
       );
     }
+
   }
 
   if (searchItem.length === 0) {
@@ -392,7 +394,7 @@ function search(searchValue) {
       .classList.remove("d-none");
   }
 
-  displayProducts(searchItem);
+  displayProducts(searchItem, true);
 }
 
 function validateProductInput(element) {
